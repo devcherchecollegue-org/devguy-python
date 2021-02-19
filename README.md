@@ -23,10 +23,10 @@ Activation de l'environnement (Linux et Mac)
 $ source bot-env/bin/activate
 ```
 
-Activation de l'environnement (Windows)
+Activation de l'environnement (Windows Powershell)
 
 ```
-$ venv\Scripts\activate.bat
+$ bot-env\bin\activate.ps1
 ```
 
 Installation des dépendances
