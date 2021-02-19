@@ -29,7 +29,7 @@ Installation des dépendances
 $ pip3 install -r requirements.txt
 ```
 
-## Utilisation l'environnement de développement
+## Utilisation de l'environnement de développement
 
 Exécuter le linter
 
