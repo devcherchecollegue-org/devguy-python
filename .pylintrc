@@ -1,0 +1,3 @@
+[pylint]
+good-names = id
+min-public-methods = 1
