@@ -1,0 +1,6 @@
+bot-env
+.env.*
+.pytest_cache
+.vscode/
+*.pyc
+__pycache__/
