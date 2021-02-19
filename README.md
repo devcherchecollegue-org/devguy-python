@@ -17,10 +17,16 @@ Création de l'environnement virtuel local
 $ python3 -m bot-env venv
 ```
 
-Activation de l'environnement
+Activation de l'environnement (Linux et Mac)
 
 ```
 $ source bot-env/bin/activate
+```
+
+Activation de l'environnement (Windows)
+
+```
+$ venv\Scripts\activate.bat
 ```
 
 Installation des dépendances
