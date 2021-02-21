@@ -6,7 +6,7 @@ class DiscordClient(discord.Client):
         super().__init__()
 
     async def on_ready(self):
-        # example on
+        # example when bot is ready
         print("Le bot est vivant!")
 
     async def on_message(self, message):
