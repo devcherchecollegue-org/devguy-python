@@ -1,0 +1,30 @@
+name: audit with tests and lint
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths-ignore:
+      - '**.md'
+jobs:
+  audit:
+    name: lint and test
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9.2'
+    - name: install dependencies
+    # skipping requirements.txt for speed purpose
+      run: pip3 install pytest pylama pylint
+    - name: lint
+      run: pylama
+    # todo: uncomment when tests are created - alt: can replace the above with pytest --pylama
+    # - name: test
+    #   run: pytest
