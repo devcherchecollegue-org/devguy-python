@@ -13,9 +13,9 @@ On est également à votre disposition sur le canal textuel byebyedevbot pour vo
 ## Cas d'usage
 Pour tester sur votre serveur privé:
 - Créer un bot avec tous les droits
-- Invitez le bot sur votre serveur
+- Inviter le bot sur votre serveur
 - Renseigner la clé secrète dans le futur .env
-- Créez des roles à assigner et récupérer leurs IDs
+- Créer des roles à assigner et récupérer leurs IDs
 - Assigner à chaque emoji un role et dans le cas d'un emoji custom son id dans le fichier `emoji_to_roles.json` au format:
 ```json
 {
@@ -26,8 +26,8 @@ Pour tester sur votre serveur privé:
   ...
 }
 ```
-- Lancez le bot `python3 main.py`
-- Dans le channel de votre choix tapez `! set_role_picker'
+- Lancer le bot `python3 main.py`
+- Dans le channel de votre choix taper `! set_role_picker'
 - Un message du bot devrait apparaitre avec les emotes configurées
 dans `emoji_to_roles.json`.
 
