@@ -1,12 +1,10 @@
-from os import environ, path
-from dotenv import load_dotenv
+from environs import Env
+
 from app.discord_client import DiscordClient
 
+env = Env()
+env.read_env()
 
-if environ.get("BOT_ENV") == "development":
-    basedir = path.dirname(__file__)
-    load_dotenv(path.join(basedir, '.env.development'))
-
-
-client = DiscordClient(environ.get("DISCORD_BOT_SECRET_KEY"))
+DISCORD_BOT_SECRET_KEY = env.str('DISCORD_BOT_SECRET_KEY')
+client = DiscordClient(DISCORD_BOT_SECRET_KEY)
 client.run()
