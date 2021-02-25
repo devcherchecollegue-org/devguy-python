@@ -75,6 +75,20 @@ class DiscordClient:
                 valid_emojies
             )
 
+    async def on_raw_reaction_add(
+        self,
+        payload: discord.RawReactionActionEvent
+    ) -> None:
+        """Gives a role based on a reaction emoji."""
+        await self._on_raw_reaction(payload, EnumReactionType.ADD)
+
+    async def on_raw_reaction_remove(
+        self,
+        payload: discord.RawReactionActionEvent
+    ) -> None:
+        """Removes a role based on a reaction emoji."""
+        await self._on_raw_reaction(payload, EnumReactionType.REMOVE)
+
     async def setup_emojies(
         self,
         message: discord.Message,
@@ -90,19 +104,48 @@ class DiscordClient:
                     f"emoji '{emoji.name}' with id '{emoji.id}' was not added."
                 )
 
-    async def on_raw_reaction_add(
-        self,
-        payload: discord.RawReactionActionEvent
-    ) -> None:
-        """Gives a role based on a reaction emoji."""
-        await self._on_raw_reaction(payload, EnumReactionType.ADD)
+    def get_guild(self, guild_id: int) -> discord.Guild:
+        """
+            Retrieve the `discord.Guild` object
+            associated to the give `guild_id`.
+        """
+        guild = self._client.get_guild(guild_id)
+        if not guild:
+            raise GuildDoesNotExists
+        return guild
 
-    async def on_raw_reaction_remove(
+    def get_role(self, guild_id: int, role_id: int) -> discord.Role:
+        """
+            Retrieve the `discord.Role` object
+            associated to a given `discord.Guild` and `role_id`.
+        """
+        guild = self.get_guild(guild_id)
+        role = guild.get_role(role_id)
+        if not role:
+            raise RoleDoesNotExists
+        return role
+
+    def get_member(self, guild_id: int, user_id: int) -> discord.Member:
+        """
+            Retrieve the `discord.Member` object
+            associated to a given `discord.Guild` and `user_id`.
+        """
+        guild = self.get_guild(guild_id)
+        member = guild.get_member(user_id)
+        if not member:
+            raise MemberDoesNotExists
+        return member
+
+    def get_role_id_from_emoji(
         self,
-        payload: discord.RawReactionActionEvent
-    ) -> None:
-        """Removes a role based on a reaction emoji."""
-        await self._on_raw_reaction(payload, EnumReactionType.REMOVE)
+        emoji: str
+    ) -> Optional[int]:
+        """
+            Returns the `role_id` associated to a give `emoji`.
+        """
+        if emoji not in self._emoji_to_role:
+            return None
+        return self._emoji_to_role[emoji]
 
     def _is_bot_itself(self, user_id: int) -> bool:
         return self._client.user.id == user_id
@@ -157,46 +200,3 @@ class DiscordClient:
             return
         else:
             print(f"Successful update of type {reaction_type.value} on {role}")
-
-    def get_guild(self, guild_id: int) -> discord.Guild:
-        """
-            Retrieve the `discord.Guild` object
-            associated to the give `guild_id`.
-        """
-        guild = self._client.get_guild(guild_id)
-        if not guild:
-            raise GuildDoesNotExists
-        return guild
-
-    def get_role(self, guild_id: int, role_id: int) -> discord.Role:
-        """
-            Retrieve the `discord.Role` object
-            associated to a given `discord.Guild` and `role_id`.
-        """
-        guild = self.get_guild(guild_id)
-        role = guild.get_role(role_id)
-        if not role:
-            raise RoleDoesNotExists
-        return role
-
-    def get_member(self, guild_id: int, user_id: int) -> discord.Member:
-        """
-            Retrieve the `discord.Member` object
-            associated to a given `discord.Guild` and `user_id`.
-        """
-        guild = self.get_guild(guild_id)
-        member = guild.get_member(user_id)
-        if not member:
-            raise MemberDoesNotExists
-        return member
-
-    def get_role_id_from_emoji(
-        self,
-        emoji: str
-    ) -> Optional[int]:
-        """
-            Returns the `role_id` associated to a give `emoji`.
-        """
-        if emoji not in self._emoji_to_role:
-            return None
-        return self._emoji_to_role[emoji]
