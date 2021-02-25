@@ -11,11 +11,6 @@ from app.exceptions import (
     InvalidReactionType,
 )
 
-ROLE_TEST1_ID = 814203001245925396
-ROLE_TEST2_ID = 814251712630095904
-EMOJI_CUSTOM1_ID = 814207249341087785
-EMOJI_HEART_EYES_ID = None
-BOT_ADMIN_USER_ID = 274655986633932800
 COMMAND_PREFIX = '!'
 
 intents_default_with_members = discord.Intents.default()
@@ -28,8 +23,20 @@ class EnumReactionType(Enum):
 
 
 class DiscordClient:
-    def __init__(self, bot_secret_key):
-        self._client = discord.Client(intents=intents_default_with_members,)
+    """
+        That class handles events recorded from discord by a bot.
+        bot_secret_key is the secret key of the bot given by discord.
+        admin_id is the id of the user able to create message which can be reacted to.
+        role_id_1 and role_id_2 are the id of the roles you want to assign to emojies.
+    """
+    def __init__(
+        self,
+        bot_secret_key: str,
+        admin_id: int,
+        emoji_to_role: dict
+    ) -> None:
+        self._client = discord.Client(intents=intents_default_with_members)
+        self.admin_id = admin_id
         self._message_picker = None
         self.bot = commands.Bot(
             command_prefix=COMMAND_PREFIX,
@@ -40,21 +47,21 @@ class DiscordClient:
         self._client.on_raw_reaction_remove = self.on_raw_reaction_remove
         self._client.on_message = self.on_message
         self._emoji_to_role = {
-            ('😍', EMOJI_HEART_EYES_ID): ROLE_TEST1_ID,
-            ('custom_emoji1', EMOJI_CUSTOM1_ID): ROLE_TEST2_ID,
+            (emoji_name, element['emoji_id']): element['role_id']
+            for emoji_name, element in emoji_to_role.items()
         }
 
     def run(self):
+        """Run the bot in listening mode. """
         self._client.run(self._bot_secret_key)
 
     async def on_message(self, message: discord.Message):
         """ Handles messages. """
         # Avoid self answering
-        print(message)
-        if message.author == self._client.user:
+        if message.author.id == self._client.user.id:
             return
 
-        if message.author.id != BOT_ADMIN_USER_ID:
+        if message.author.id != self.admin_id:
             return
 
         if message.content == f'{COMMAND_PREFIX} set_role_picker':
@@ -63,19 +70,25 @@ class DiscordClient:
                 discord.PartialEmoji(name=name, id=id)
                 for name, id in self._emoji_to_role
             ]
-            await self.setup_reactions(
+            await self.setup_emojies(
                 self._message_picker,
-                valid_emojies,
+                valid_emojies
             )
 
-    async def setup_reactions(
+    async def setup_emojies(
         self,
         message: discord.Message,
         emojies: List[discord.PartialEmoji]
     ) -> None:
         """Adds emojies to a message."""
         for emoji in emojies:
-            await message.add_reaction(emoji)
+            try:
+                await message.add_reaction(emoji)
+            except discord.HTTPException as e:
+                print(e.text)
+                print(
+                    f"emoji '{emoji.name}' with id '{emoji.id}' was not added."
+                )
 
     async def on_raw_reaction_add(
         self,
@@ -91,31 +104,33 @@ class DiscordClient:
         """Removes a role based on a reaction emoji."""
         await self._on_raw_reaction(payload, EnumReactionType.REMOVE)
 
+    def _is_bot_itself(self, user_id: int) -> bool:
+        return self._client.user.id == user_id
+
+    def _is_message_picker(self, message_id: int) -> bool:
+        if not self._message_picker:
+            print("No message to react to")
+            return False
+        return message_id == self._message_picker.id
+
     async def _on_raw_reaction(
         self,
         payload: discord.RawReactionActionEvent,
         reaction_type: str,
     ) -> discord.Role:
         """Handles a role based on a reaction emoji and a type of reaction."""
-        if self._client.user.id == payload.user_id:
+        if self._is_bot_itself(payload.user_id):
             print("reaction added by the bot itself")
             return
-        
-        if reaction_type not in EnumReactionType:
-            print(f"Reaction type: {reaction_type} is not valid")
+
+        if not self._is_message_picker(payload.message_id):
+            print("This message is not monitored for reactions")
             return
 
-        if not self._message_picker:
-            print("No message to react to")
-            return
-
-        if payload.message_id != self._message_picker.id:
-            print("The reaction is added on a different message")
-            return
-
-        role_id = self.get_role_id_from_emoji(payload.emoji)
+        role_id = self.get_role_id_from_emoji(payload.emoji.name)
         if not role_id:
-            print(f' {payload.emoji} not associated to a role')
+            print(f'{payload.emoji.name} with id {payload.emoji.id} is not associated to a role')
+            return
 
         try:
             role = self.get_role(payload.guild_id, role_id)
@@ -177,12 +192,11 @@ class DiscordClient:
 
     def get_role_id_from_emoji(
         self,
-        emoji: discord.PartialEmoji
+        emoji: str
     ) -> Optional[int]:
         """
             Returns the `role_id` associated to a give `emoji`.
         """
-        emoji_key = (emoji.name, emoji.id)
-        if emoji_key not in self._emoji_to_role:
+        if emoji not in self._emoji_to_role:
             return None
-        return self._emoji_to_role[emoji_key]
+        return self._emoji_to_role[emoji]

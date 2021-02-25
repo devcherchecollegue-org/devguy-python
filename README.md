@@ -15,16 +15,21 @@ Pour tester sur votre serveur privé:
 - Créer un bot avec tous les droits
 - Invitez le bot sur votre serveur
 - Renseigner la clé secrète dans le futur .env
-- Créez 2 roles de test
-- Créez 1 emoji custom nommé : `custom_emoji1` et récupérez son id.
-- Ajuster les CONSTANTES GLOBALES de `discrod_client.py` aux valeurs de votre serveur (à déplacer plus tard dans une persistance: .env, .ini, BDD...)
-  - ROLE_TEST1_ID: l'id du premier role de test
-  - ROLE_TEST2_ID: l'id du deuxième role de test
-  - EMOJI_CUSTOM1_ID: l'id de `custom_emoji1`
-  - BOT_ADMIN_USER_ID: votre id sur votre serveur privé (vous autorise à créer un nouveau message à réactions)
+- Créez des roles à assigner et récupérer leurs IDs
+- Assigner à chaque emoji un role et dans le cas d'un emoji custom son id dans le fichier `emoji_to_roles.json` au format:
+```json
+{
+  "<emoji_name>": {
+    "emoji_id": <emoji_id>,
+    "role_id": <role_id>
+  },
+  ...
+}
+```
 - Lancez le bot `python3 main.py`
 - Dans le channel de votre choix tapez `! set_role_picker'
-- Un message du bot devrait apparaitre avec les emotes configurées dans les CONSTANTES GLOBALES.
+- Un message du bot devrait apparaitre avec les emotes configurées
+dans `emoji_to_roles.json`.
 
 ## Configuration de l'environnement client
 
@@ -38,7 +43,8 @@ Création d'un fichier .env pour les variables locales
 
 ```bash
 cat > .env <<EOF
-DISCORD_BOT_SECRET_KEY=<YOU-DISCORD-BOT-SECRET-KEY>
+DISCORD_BOT_SECRET_KEY=<YOUR DISCORD BOT SECRET KEY>
+DISCORD_BOT_ADMIN_ID=<ID OF THE USER ABLE TO ADD REACT MESSAGES>
 EOF
 ```
 
