@@ -5,6 +5,7 @@
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
+
 *.py[cod]
 *$py.class
 
@@ -143,3 +144,8 @@ dmypy.json
 .prof
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+
+.idea
+venv
+.env.*
+!.env.sample
