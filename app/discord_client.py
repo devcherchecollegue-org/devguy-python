@@ -178,13 +178,7 @@ class DiscordClient:
         try:
             role = self.get_role(payload.guild_id, role_id)
             member = self.get_member(payload.guild_id, payload.user_id)
-        except GuildDoesNotExists as e:
-            print(e)
-            return
-        except RoleDoesNotExists as e:
-            print(e)
-            return
-        except MemberDoesNotExists as e:
+        except (GuildDoesNotExists, RoleDoesNotExists, MemberDoesNotExists) as e:
             print(e)
             return
 

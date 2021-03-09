@@ -72,6 +72,7 @@ pip3 install -r requirements.txt
 Installation des dépendances de test
 
 ```bash
+pip3 install -r requirements.txt
 pip3 install - r requirements-dev.txt
 ```
 
