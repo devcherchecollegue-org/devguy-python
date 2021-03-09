@@ -1,3 +1,6 @@
 [pylint]
 good-names = id
-min-public-methods = 1
+min-public-methods = 0
+
+[MASTER]
+disable= C0114, # missing-module-docstring

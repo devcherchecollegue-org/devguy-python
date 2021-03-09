@@ -1,14 +1,12 @@
 from enum import Enum
-from typing import Optional, List
+from typing import List, Optional
 
 import discord
 from discord.ext import commands
 
-from app.exceptions import (
-    GuildDoesNotExists,
-    RoleDoesNotExists,
-    MemberDoesNotExists,
-    InvalidReactionType,
+from app.domains.exceptions import (
+    GuildDoesNotExists, InvalidReactionType,
+    MemberDoesNotExists, RoleDoesNotExists,
 )
 
 COMMAND_PREFIX = '!'
@@ -29,11 +27,12 @@ class DiscordClient:
         admin_id is the id of the user able to create message which can be reacted to.
         role_id_1 and role_id_2 are the id of the roles you want to assign to emojies.
     """
+
     def __init__(
-        self,
-        bot_secret_key: str,
-        admin_id: int,
-        emoji_to_role: dict
+            self,
+            bot_secret_key: str,
+            admin_id: int,
+            emoji_to_role: dict
     ) -> None:
         self._client = discord.Client(intents=intents_default_with_members)
         self.admin_id = admin_id
@@ -76,23 +75,23 @@ class DiscordClient:
             )
 
     async def on_raw_reaction_add(
-        self,
-        payload: discord.RawReactionActionEvent
+            self,
+            payload: discord.RawReactionActionEvent
     ) -> None:
         """Gives a role based on a reaction emoji."""
         await self._on_raw_reaction(payload, EnumReactionType.ADD)
 
     async def on_raw_reaction_remove(
-        self,
-        payload: discord.RawReactionActionEvent
+            self,
+            payload: discord.RawReactionActionEvent
     ) -> None:
         """Removes a role based on a reaction emoji."""
         await self._on_raw_reaction(payload, EnumReactionType.REMOVE)
 
     async def setup_emojies(
-        self,
-        message: discord.Message,
-        emojies: List[discord.PartialEmoji]
+            self,
+            message: discord.Message,
+            emojies: List[discord.PartialEmoji]
     ) -> None:
         """Adds emojies to a message."""
         for emoji in emojies:
@@ -137,8 +136,8 @@ class DiscordClient:
         return member
 
     def get_role_id_from_emoji(
-        self,
-        emoji: str
+            self,
+            emoji: str
     ) -> Optional[int]:
         """
             Returns the `role_id` associated to a give `emoji`.
@@ -157,10 +156,10 @@ class DiscordClient:
         return message_id == self._message_picker.id
 
     async def _on_raw_reaction(
-        self,
-        payload: discord.RawReactionActionEvent,
-        reaction_type: str,
-    ) -> discord.Role:
+            self,
+            payload: discord.RawReactionActionEvent,
+            reaction_type: EnumReactionType,
+    ) -> None:
         """Handles a role based on a reaction emoji and a type of reaction."""
         if self._is_bot_itself(payload.user_id):
             print("reaction added by the bot itself")
