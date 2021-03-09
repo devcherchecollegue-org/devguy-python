@@ -1,4 +1,4 @@
-# byebyedevbot
+# devguy
 
 Bot Discord collaboratif du serveur **Dev Cherche Collègue**
 
