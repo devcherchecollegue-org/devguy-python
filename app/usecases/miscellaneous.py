@@ -1,3 +1,5 @@
+from sqlite3 import IntegrityError
+
 from app.modules.miscellaneous import Miscellaneous as MiscellaneousMod
 
 
@@ -7,9 +9,9 @@ class Miscellaneous:
     """
 
     def __init__(self, miscellaneous_module: MiscellaneousMod):
-        self.miscellaneous = miscellaneous_module
+        self.__miscellaneous = miscellaneous_module
 
-    def coin_coin(self, user_id: str) -> bool:
+    def coin_coin(self, user_id: int) -> bool:
         """
         Coin coin usecase will start following messages from specified user
         and will respond with a random coin coin string every X messages
@@ -21,11 +23,14 @@ class Miscellaneous:
         :rtype: bool
         """
         try:
-            self.miscellaneous.follow_user(user_id)
-            return True
+            self.__miscellaneous.follow_user(user_id)
+        except IntegrityError as e:
+            print(e)
         except NotImplementedError:
             print("Method follow does not exist for coin coin command")
             return False
+
+        return True
 
     def stop_coin_coin(self, user_id: int):
         """
@@ -34,4 +39,11 @@ class Miscellaneous:
         :return: Coin coin started correctly
         """
 
-        self.miscellaneous.unfollow_user(user_id)
+        self.__miscellaneous.unfollow_user(user_id)
+
+    def coin_coin_message(self, user_id: int):
+        if not self.__miscellaneous.is_following_user(user_id):
+            print("User is not followed")
+            return
+
+        return self.__miscellaneous.get_coin_coin_string()

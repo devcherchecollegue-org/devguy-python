@@ -4,7 +4,7 @@ from discord import Client, Intents, Message, RawReactionActionEvent
 from discord.ext import commands
 
 from app.domains.exceptions import InvalidReactionType
-from app.usecases import Roles
+from app.usecases import Miscellaneous, Roles
 
 COMMAND_PREFIX = '!'
 
@@ -17,6 +17,10 @@ intents_default_with_members.members = True
 class EnumReactionType(Enum):
     ADD = 'ADD'
     REMOVE = 'REMOVE'
+
+
+class MessageCommand:
+    pass
 
 
 class DiscordClient:
@@ -32,6 +36,7 @@ class DiscordClient:
             bot_secret_key: str,
             admin_id: int,
             roles: Roles,
+            misc: Miscellaneous,
     ) -> None:
         self._client = Client(intents=intents_default_with_members)
         self.admin_id = admin_id
@@ -44,10 +49,27 @@ class DiscordClient:
         self._client.on_raw_reaction_remove = self.on_raw_reaction_remove
         self._client.on_message = self.on_message
         self.__roles = roles
+        self.__misc = misc
+
+        self.__cmd = {
+            f'{COMMAND_PREFIX}set_role_picker': self.__cmd_set_role_picker,
+            f'{COMMAND_PREFIX}coin_coin':       self.__cmd_coin_coin_follow,
+            f'{COMMAND_PREFIX}coin_coin_stop':  self.__cmd_coin_coin_unfollow,
+        }
 
     def run(self):
         """Run the bot in listening mode. """
         self._client.run(self._bot_secret_key)
+
+    async def __cmd_set_role_picker(self, message: Message):
+        _role_message_picker = await message.channel.send('pick a role with reactions')
+        await self.__roles.setup_role_picker(_role_message_picker)
+
+    async def __cmd_coin_coin_follow(self, message: Message):
+        self.__misc.coin_coin(message.author.id)
+
+    async def __cmd_coin_coin_unfollow(self, message: Message):
+        self.__misc.stop_coin_coin(message.author.id)
 
     async def on_message(self, message: Message):
         """ Handles messages. """
@@ -58,11 +80,13 @@ class DiscordClient:
         if message.author.id != self.admin_id:
             return
 
-        if message.content == f'{COMMAND_PREFIX}set_role_picker':
-            print("Hello ?")
-            _role_message_picker = await message.channel.send('pick a role with reactions')
+        if message.content in self.__cmd:
+            await self.__cmd[message.content](message)
+            return
 
-            await self.__roles.setup_role_picker(_role_message_picker)
+        coin_coin = self.__misc.coin_coin_message(message.author.id)
+        if coin_coin:
+            await message.channel.send(coin_coin)
 
     async def on_raw_reaction_add(
             self,

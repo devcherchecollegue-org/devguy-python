@@ -12,6 +12,21 @@ class DAO:
     def __cursor(self):
         return self.conn.cursor()
 
+    def __commit(self):
+        return self.conn.commit()
+
+    def get(self, user_id: int):
+        """
+        Add user to followed list
+
+        :param user_id:
+        :raises: sqlite3 errors
+        """
+        query = """
+        SELECT * FROM coin_coin WHERE user_id = :uid
+        """
+        return self.__cursor().execute(query, {'uid': user_id}).fetchone()
+
     def insert_follow(self, user_id: int):
         """
         Add user to followed list
@@ -21,13 +36,14 @@ class DAO:
         """
         query = """
         INSERT INTO coin_coin (user_id)
-        VALUE (?)
+        VALUES (:uid)
         """
-
-        self.__cursor().execute(query, user_id)
+        self.__cursor().execute(query, {'uid': user_id})
+        self.__commit()
 
     def delete_follow(self, user_id: int):
         """
+        Forgot followed user
 
         :param user_id:
         :raises: sqlite3 errors
@@ -37,4 +53,5 @@ class DAO:
             WHERE user_id = ?
             """
 
-        self.__cursor().execute(query, user_id)
+        self.__cursor().execute(query, [user_id])
+        self.__commit()

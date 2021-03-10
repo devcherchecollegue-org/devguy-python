@@ -5,9 +5,10 @@ from os import environ, path
 
 from environs import Env
 
+from app.modules import miscellaneous as miscellaneous_mod
 from app.modules.roles.roles import Roles as RolesMod
 from app.transport import Discord
-from app.usecases import Roles
+from app.usecases import Miscellaneous, Roles
 
 config = ConfigParser()
 env = Env()
@@ -30,10 +31,15 @@ with open('emoji_to_roles.json') as f:
 roles_module = RolesMod(emoji_to_role)  # find a way to cleanly inject deps in python
 roles = Roles(roles_module)
 
+misc_dao = miscellaneous_mod.DAO(config)
+misc_mod = miscellaneous_mod.Miscellaneous(misc_dao)
+misc = Miscellaneous(misc_mod)
+
 client = Discord(
     bot_secret_key=DISCORD_BOT_SECRET_KEY,
     admin_id=DISCORD_BOT_ADMIN_ID,
-    roles=roles
+    roles=roles,
+    misc=misc,
 )
 
 client.run()

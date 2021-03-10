@@ -13,11 +13,17 @@ class SetupError:
         self.emoji_id = emoji.id
 
     def print(self):
+        """
+        Print error as multiline string message
+        """
         print(self.message)
         print(f"emoji '{self.emoji_name}' with id '{self.emoji_id}' was not added.")
 
 
 class SetRoleOption(Enum):
+    """
+    SetRoleOption represent a specific argument
+    """
     ADD = 'ADD'
     REMOVE = 'REMOVE'
 
