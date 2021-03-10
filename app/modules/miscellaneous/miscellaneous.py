@@ -26,8 +26,8 @@ class Miscellaneous:
     def get_coin_coin_string() -> str:
         return coin_coins[randint(0, len(coin_coins))]
 
-    def follow_user(self, user_id: str):
+    def follow_user(self, user_id: int):
         self.dao.insert_follow(user_id)
 
-    def unfollow_user(self, user_id: str):
+    def unfollow_user(self, user_id: int):
         self.dao.delete_follow(user_id)

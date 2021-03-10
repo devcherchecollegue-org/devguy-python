@@ -3,11 +3,11 @@ from typing import List
 
 from discord import Guild, HTTPException, Message, PartialEmoji, Role
 
-from app.domains import InvalidOption, MemberDoesNotExists, RoleDoesNotExists
+from app.domains import InvalidOption, MemberDoesNotExists, RoleDoesNotExists, UnexpectedError
 
 
 class SetupError:
-    def __init__(self, message, emoji):
+    def __init__(self, message: str, emoji: PartialEmoji):
         self.message = message
         self.emoji_name = emoji.name
         self.emoji_id = emoji.id
@@ -56,22 +56,26 @@ class Roles:
             try:
                 await message.add_reaction(emoji)
             except HTTPException as e:
-                errors.append(e.text)
+                errors.append(SetupError(e.text, emoji))
 
         return errors
 
-    def is_role_picker_message(self, message_id):
+    def is_role_picker_message(self, message_id: int):
         return message_id == self.__role_picker_msg_id
 
-    def emoji_to_role(self, guild: Guild, emoji_id) -> Role:
-        role_id = self.__emoji_to_role[emoji_id]
+    def emoji_to_role(self, guild: Guild, emoji: PartialEmoji) -> Role:
+        print(emoji)
+        role_id = self.__emoji_to_role.get((emoji.name, emoji.id))
+        if not role_id:
+            print(role_id, self.__emoji_to_role)
+            raise UnexpectedError
         role = guild.get_role(role_id)
         if not role:
             raise RoleDoesNotExists
         return role
 
     @staticmethod
-    async def set_role(guild: Guild, role: Role, user_id, option: SetRoleOption) -> None:
+    async def set_role(guild: Guild, role: Role, user_id: int, option: SetRoleOption) -> None:
         member = guild.get_member(user_id)
         if not member:
             raise MemberDoesNotExists

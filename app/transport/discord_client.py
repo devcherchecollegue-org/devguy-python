@@ -1,16 +1,14 @@
 from enum import Enum
 
-import discord
+from discord import Client, Intents, Message, RawReactionActionEvent
 from discord.ext import commands
 
-from app.domains.exceptions import (
-    InvalidReactionType,
-)
+from app.domains.exceptions import InvalidReactionType
 from app.usecases import Roles
 
 COMMAND_PREFIX = '!'
 
-intents_default_with_members = discord.Intents.default()
+intents_default_with_members = Intents.default()
 intents_default_with_members.members = True
 
 
@@ -33,7 +31,7 @@ class DiscordClient:
             admin_id: int,
             roles: Roles,
     ) -> None:
-        self._client = discord.Client(intents=intents_default_with_members)
+        self._client = Client(intents=intents_default_with_members)
         self.admin_id = admin_id
         self.bot = commands.Bot(
             command_prefix=COMMAND_PREFIX,
@@ -49,7 +47,7 @@ class DiscordClient:
         """Run the bot in listening mode. """
         self._client.run(self._bot_secret_key)
 
-    async def on_message(self, message: discord.Message):
+    async def on_message(self, message: Message):
         """ Handles messages. """
         # Avoid self answering
         if message.author.id == self._client.user.id:
@@ -58,21 +56,22 @@ class DiscordClient:
         if message.author.id != self.admin_id:
             return
 
-        if message.content == f'{COMMAND_PREFIX} set_role_picker':
+        if message.content == f'{COMMAND_PREFIX}set_role_picker':
+            print("Hello ?")
             _role_message_picker = await message.channel.send('pick a role with reactions')
 
             await self.__roles.setup_role_picker(_role_message_picker)
 
     async def on_raw_reaction_add(
             self,
-            payload: discord.RawReactionActionEvent
+            payload: RawReactionActionEvent
     ) -> None:
         """Gives a role based on a reaction emoji."""
         await self._on_raw_reaction(payload, EnumReactionType.ADD)
 
     async def on_raw_reaction_remove(
             self,
-            payload: discord.RawReactionActionEvent
+            payload: RawReactionActionEvent
     ) -> None:
         """Removes a role based on a reaction emoji."""
         await self._on_raw_reaction(payload, EnumReactionType.REMOVE)
@@ -82,7 +81,7 @@ class DiscordClient:
 
     async def _on_raw_reaction(
             self,
-            payload: discord.RawReactionActionEvent,
+            payload: RawReactionActionEvent,
             reaction_type: EnumReactionType,
     ) -> None:
         """Handles a role based on a reaction emoji and a type of reaction."""
@@ -95,13 +94,13 @@ class DiscordClient:
         if reaction_type == EnumReactionType.ADD:
             await self.__roles.add_role(
                 guild, payload.message_id,
-                payload.emoji.name, payload.user_id,
+                payload.emoji, payload.user_id,
 
             )
         elif reaction_type == EnumReactionType.REMOVE:
             await self.__roles.remove_role(
                 guild, payload.message_id,
-                payload.emoji.name, payload.user_id,
+                payload.emoji, payload.user_id,
             )
         else:
             raise InvalidReactionType

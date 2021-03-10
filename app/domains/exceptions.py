@@ -16,3 +16,7 @@ class InvalidReactionType(Exception):
 
 class InvalidOption(Exception):
     pass
+
+
+class UnexpectedError(Exception):
+    pass

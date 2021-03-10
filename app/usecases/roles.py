@@ -1,6 +1,6 @@
 from typing import Optional
 
-from discord import Guild, HTTPException, Message, Role
+from discord import Guild, HTTPException, Message, PartialEmoji, Role
 
 from app.domains import (
     GuildDoesNotExists, MemberDoesNotExists,
@@ -45,21 +45,21 @@ class Roles:
 
     async def add_role(
             self, guild: Optional[Guild],
-            message_id, emoji_id, user_id,
+            message_id: int, emoji: PartialEmoji, user_id: int,
     ) -> None:
-        await self.__set_role(guild, message_id, emoji_id, user_id, SetRoleOption.ADD)
+        await self.__set_role(guild, message_id, emoji, user_id, SetRoleOption.ADD)
 
     async def remove_role(
             self, guild: Optional[Guild],
-            message_id, emoji_id, user_id,
+            message_id: int, emoji: PartialEmoji, user_id: int,
     ) -> None:
-        await self.__set_role(guild, message_id, emoji_id, user_id, SetRoleOption.ADD)
+        await self.__set_role(guild, message_id, emoji, user_id, SetRoleOption.REMOVE)
 
     # This is not a good practice while dealing with usecases but I really hate this kind of
     # duplication ... Perhaps I should just keep this usecase 
     async def __set_role(
             self, guild: Optional[Guild],
-            message_id, emoji_id, user_id,
+            message_id: int, emoji: PartialEmoji, user_id: int,
             opt: SetRoleOption,
     ) -> Optional[Role]:
         if not self.__roles.is_role_picker_message(message_id):
@@ -70,8 +70,8 @@ class Roles:
             print(GuildDoesNotExists)
 
         try:
-            role = self.__roles.emoji_to_role(guild, emoji_id)
-            await self.__roles.set_role(guild, user_id, role, opt)
+            role = self.__roles.emoji_to_role(guild, emoji)
+            await self.__roles.set_role(guild, role, user_id, opt)
 
         except (RoleDoesNotExists, MemberDoesNotExists, HTTPException) as e:
             print(e)

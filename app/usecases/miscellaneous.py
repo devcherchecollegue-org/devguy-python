@@ -1,5 +1,6 @@
 from app.modules.miscellaneous import Miscellaneous as MiscellaneousMod
 
+
 class Miscellaneous:
     """
     Miscellaneous provides funny usecases to work on the bot simply :)
@@ -26,7 +27,7 @@ class Miscellaneous:
             print("Method follow does not exist for coin coin command")
             return False
 
-    def stop_coin_coin(self, user_id: str):
+    def stop_coin_coin(self, user_id: int):
         """
         Stop coin coin stop following user to respond with coin coin messages.
 

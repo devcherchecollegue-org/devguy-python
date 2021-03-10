@@ -12,7 +12,7 @@ class DAO:
     def __cursor(self):
         return self.conn.cursor()
 
-    def insert_follow(self, user_id: str):
+    def insert_follow(self, user_id: int):
         """
         Add user to followed list
 
@@ -26,7 +26,7 @@ class DAO:
 
         self.__cursor().execute(query, user_id)
 
-    def delete_follow(self, user_id: str):
+    def delete_follow(self, user_id: int):
         """
 
         :param user_id:
