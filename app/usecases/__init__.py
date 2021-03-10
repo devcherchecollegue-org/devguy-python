@@ -6,3 +6,4 @@ actions.
 """
 
 from .miscellaneous import Miscellaneous  # expose Miscellaneous in module
+from .roles import Roles

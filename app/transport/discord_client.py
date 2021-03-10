@@ -1,13 +1,12 @@
 from enum import Enum
-from typing import List, Optional
 
 import discord
 from discord.ext import commands
 
 from app.domains.exceptions import (
-    GuildDoesNotExists, InvalidReactionType,
-    MemberDoesNotExists, RoleDoesNotExists,
+    InvalidReactionType,
 )
+from app.usecases import Roles
 
 COMMAND_PREFIX = '!'
 
@@ -32,11 +31,10 @@ class DiscordClient:
             self,
             bot_secret_key: str,
             admin_id: int,
-            emoji_to_role: dict
+            roles: Roles,
     ) -> None:
         self._client = discord.Client(intents=intents_default_with_members)
         self.admin_id = admin_id
-        self._message_picker = None
         self.bot = commands.Bot(
             command_prefix=COMMAND_PREFIX,
             intents=intents_default_with_members,
@@ -45,10 +43,7 @@ class DiscordClient:
         self._client.on_raw_reaction_add = self.on_raw_reaction_add
         self._client.on_raw_reaction_remove = self.on_raw_reaction_remove
         self._client.on_message = self.on_message
-        self._emoji_to_role = {
-            (emoji_name, element['emoji_id']): element['role_id']
-            for emoji_name, element in emoji_to_role.items()
-        }
+        self.__roles = roles
 
     def run(self):
         """Run the bot in listening mode. """
@@ -64,15 +59,9 @@ class DiscordClient:
             return
 
         if message.content == f'{COMMAND_PREFIX} set_role_picker':
-            self._message_picker = await message.channel.send('pick a role with reactions')
-            valid_emojies = [
-                discord.PartialEmoji(name=name, id=id)
-                for name, id in self._emoji_to_role
-            ]
-            await self.setup_emojies(
-                self._message_picker,
-                valid_emojies
-            )
+            _role_message_picker = await message.channel.send('pick a role with reactions')
+
+            await self.__roles.setup_role_picker(_role_message_picker)
 
     async def on_raw_reaction_add(
             self,
@@ -88,72 +77,8 @@ class DiscordClient:
         """Removes a role based on a reaction emoji."""
         await self._on_raw_reaction(payload, EnumReactionType.REMOVE)
 
-    async def setup_emojies(
-            self,
-            message: discord.Message,
-            emojies: List[discord.PartialEmoji]
-    ) -> None:
-        """Adds emojies to a message."""
-        for emoji in emojies:
-            try:
-                await message.add_reaction(emoji)
-            except discord.HTTPException as e:
-                print(e.text)
-                print(
-                    f"emoji '{emoji.name}' with id '{emoji.id}' was not added."
-                )
-
-    def get_guild(self, guild_id: int) -> discord.Guild:
-        """
-            Retrieve the `discord.Guild` object
-            associated to the give `guild_id`.
-        """
-        guild = self._client.get_guild(guild_id)
-        if not guild:
-            raise GuildDoesNotExists
-        return guild
-
-    def get_role(self, guild_id: int, role_id: int) -> discord.Role:
-        """
-            Retrieve the `discord.Role` object
-            associated to a given `discord.Guild` and `role_id`.
-        """
-        guild = self.get_guild(guild_id)
-        role = guild.get_role(role_id)
-        if not role:
-            raise RoleDoesNotExists
-        return role
-
-    def get_member(self, guild_id: int, user_id: int) -> discord.Member:
-        """
-            Retrieve the `discord.Member` object
-            associated to a given `discord.Guild` and `user_id`.
-        """
-        guild = self.get_guild(guild_id)
-        member = guild.get_member(user_id)
-        if not member:
-            raise MemberDoesNotExists
-        return member
-
-    def get_role_id_from_emoji(
-            self,
-            emoji: str
-    ) -> Optional[int]:
-        """
-            Returns the `role_id` associated to a give `emoji`.
-        """
-        if emoji not in self._emoji_to_role:
-            return None
-        return self._emoji_to_role[emoji]
-
-    def _is_bot_itself(self, user_id: int) -> bool:
+    def __is_self(self, user_id: int) -> bool:
         return self._client.user.id == user_id
-
-    def _is_message_picker(self, message_id: int) -> bool:
-        if not self._message_picker:
-            print("No message to react to")
-            return False
-        return message_id == self._message_picker.id
 
     async def _on_raw_reaction(
             self,
@@ -161,35 +86,22 @@ class DiscordClient:
             reaction_type: EnumReactionType,
     ) -> None:
         """Handles a role based on a reaction emoji and a type of reaction."""
-        if self._is_bot_itself(payload.user_id):
+        if self.__is_self(payload.user_id):
             print("reaction added by the bot itself")
             return
 
-        if not self._is_message_picker(payload.message_id):
-            print("This message is not monitored for reactions")
-            return
+        guild = self._client.get_guild(payload.guild_id)
 
-        role_id = self.get_role_id_from_emoji(payload.emoji.name)
-        if not role_id:
-            print(f'{payload.emoji.name} with id {payload.emoji.id} is not associated to a role')
-            return
+        if reaction_type == EnumReactionType.ADD:
+            await self.__roles.add_role(
+                guild, payload.message_id,
+                payload.emoji.name, payload.user_id,
 
-        try:
-            role = self.get_role(payload.guild_id, role_id)
-            member = self.get_member(payload.guild_id, payload.user_id)
-        except (GuildDoesNotExists, RoleDoesNotExists, MemberDoesNotExists) as e:
-            print(e)
-            return
-
-        try:
-            if reaction_type == EnumReactionType.ADD:
-                await member.add_roles(role)
-            elif reaction_type == EnumReactionType.REMOVE:
-                await member.remove_roles(role)
-            else:
-                raise InvalidReactionType
-        except discord.HTTPException as e:
-            print(e)
-            return
+            )
+        elif reaction_type == EnumReactionType.REMOVE:
+            await self.__roles.remove_role(
+                guild, payload.message_id,
+                payload.emoji.name, payload.user_id,
+            )
         else:
-            print(f"Successful update of type {reaction_type.value} on {role}")
+            raise InvalidReactionType

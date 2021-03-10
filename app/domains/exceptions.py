@@ -12,3 +12,7 @@ class MemberDoesNotExists(Exception):
 
 class InvalidReactionType(Exception):
     pass
+
+
+class InvalidOption(Exception):
+    pass

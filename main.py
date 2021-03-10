@@ -5,7 +5,9 @@ from os import environ, path
 
 from environs import Env
 
+from app.modules.roles.roles import Roles as RolesMod
 from app.transport import Discord
+from app.usecases import Roles
 
 config = ConfigParser()
 env = Env()
@@ -24,9 +26,14 @@ DISCORD_BOT_ADMIN_ID = env.int('DISCORD_BOT_ADMIN_ID')
 with open('emoji_to_roles.json') as f:
     emoji_to_role = load(f)
 
+# Prepare dependencies
+roles_module = RolesMod(emoji_to_role)  # find a way to cleanly inject deps in python
+roles = Roles(roles_module)
+
 client = Discord(
     bot_secret_key=DISCORD_BOT_SECRET_KEY,
     admin_id=DISCORD_BOT_ADMIN_ID,
-    emoji_to_role=emoji_to_role
+    roles=roles
 )
+
 client.run()
