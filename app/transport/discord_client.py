@@ -9,6 +9,8 @@ from app.usecases import Roles
 COMMAND_PREFIX = '!'
 
 intents_default_with_members = Intents.default()
+# pylint: disable=E0237
+# -> assigning members not defined in class slots
 intents_default_with_members.members = True
 
 

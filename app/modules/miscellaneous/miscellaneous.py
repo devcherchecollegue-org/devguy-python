@@ -20,7 +20,6 @@ class Miscellaneous:
     def __init__(self, dao: DAO):
         seed()
         self.dao = dao
-        return
 
     @staticmethod
     def get_coin_coin_string() -> str:

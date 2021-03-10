@@ -1,6 +1,6 @@
 [pylint]
-good-names = id
+good-names = id, e
 min-public-methods = 0
 
 [MASTER]
-disable= C0114, # missing-module-docstring
+disable= C0114, R0913 # missing-module-docstring, too many arguments

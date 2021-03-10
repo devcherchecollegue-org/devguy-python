@@ -7,7 +7,7 @@ class DAO:
             self.conn = connect(config.get('database', 'database'))
         except Error as e:
             print(e)
-            raise EnvironmentError("Could not connect to database!")
+            raise EnvironmentError("Could not connect to database!") from e
 
     def __cursor(self):
         return self.conn.cursor()
@@ -19,7 +19,7 @@ class DAO:
         :param user_id:
         :raises: sqlite3 errors
         """
-        query = """ 
+        query = """
         INSERT INTO coin_coin (user_id)
         VALUE (?)
         """
@@ -32,7 +32,7 @@ class DAO:
         :param user_id:
         :raises: sqlite3 errors
         """
-        query = """ 
+        query = """
             DELETE FROM coin_coin
             WHERE user_id = ?
             """

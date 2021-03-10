@@ -4,4 +4,3 @@ within the bot and shared from transport to modules.
 """
 
 from .exceptions import *
-from .reaction import *

@@ -23,7 +23,7 @@ class Miscellaneous:
         try:
             self.miscellaneous.follow_user(user_id)
             return True
-        except NotImplemented:
+        except NotImplementedError:
             print("Method follow does not exist for coin coin command")
             return False
 
