@@ -23,7 +23,7 @@ class MessageCommand:
     pass
 
 
-class DiscordClient:
+class Discord:
     """
         That class handles events recorded from discord by a bot.
         bot_secret_key is the secret key of the bot given by discord.

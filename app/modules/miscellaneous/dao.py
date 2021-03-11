@@ -4,7 +4,7 @@ from sqlite3 import connect, Error
 class DAO:
     def __init__(self, config):
         try:
-            self.conn = connect(config.get('database', 'database'))
+            self.conn = connect(config.get('database', 'name'))
         except Error as e:
             print(e)
             raise EnvironmentError("Could not connect to database!") from e
