@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlite3 import IntegrityError
 
 from app.modules.miscellaneous import Miscellaneous as MiscellaneousMod
