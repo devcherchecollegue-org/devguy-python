@@ -41,9 +41,9 @@ class Miscellaneous:
 
         self.__miscellaneous.unfollow_user(user_id)
 
-    def coin_coin_message(self, user_id: int):
+    def coin_coin_message(self, user_id: int) -> Optional[str]:
         if not self.__miscellaneous.is_following_user(user_id):
             print("User is not followed")
-            return
+            return None
 
         return self.__miscellaneous.get_coin_coin_string()
