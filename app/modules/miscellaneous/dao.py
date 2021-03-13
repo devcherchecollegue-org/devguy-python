@@ -1,10 +1,12 @@
 from sqlite3 import connect, Error
 
+from dependency_injector.providers import Configuration
+
 
 class DAO:
-    def __init__(self, config):
+    def __init__(self, config: Configuration):
         try:
-            self.conn = connect(config.get('database', 'name'))
+            self.conn = connect(config.get('database', {}).get('name'))
         except Error as e:
             print(e)
             raise EnvironmentError("Could not connect to database!") from e
