@@ -1,16 +1,16 @@
 from typing import Optional
 from sqlite3 import IntegrityError
 
-from app.modules.miscellaneous import Miscellaneous as MiscellaneousMod
+from app.modules import rubber_duck
 
 
-class Miscellaneous:
+class RubberDuck:
     """
     Miscellaneous provides funny usecases to work on the bot simply :)
     """
 
-    def __init__(self, miscellaneous_module: MiscellaneousMod):
-        self.__miscellaneous = miscellaneous_module
+    def __init__(self, miscellaneous_module: rubber_duck.RubberDuck):
+        self.__duck = miscellaneous_module
 
     def coin_coin(self, user_id: int) -> bool:
         """
@@ -24,7 +24,7 @@ class Miscellaneous:
         :rtype: bool
         """
         try:
-            self.__miscellaneous.follow_user(user_id)
+            self.__duck.follow_user(user_id)
         except IntegrityError as e:
             print(e)
         except NotImplementedError:
@@ -40,11 +40,11 @@ class Miscellaneous:
         :return: Coin coin started correctly
         """
 
-        self.__miscellaneous.unfollow_user(user_id)
+        self.__duck.unfollow_user(user_id)
 
     def coin_coin_message(self, user_id: int) -> Optional[str]:
-        if not self.__miscellaneous.is_following_user(user_id):
+        if not self.__duck.is_following_user(user_id):
             print("User is not followed")
             return None
 
-        return self.__miscellaneous.get_coin_coin_string()
+        return self.__duck.get_coin_coin_string()

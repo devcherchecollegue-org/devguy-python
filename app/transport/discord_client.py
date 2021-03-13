@@ -4,7 +4,7 @@ from discord import Client, Intents, Message, RawReactionActionEvent
 from discord.ext import commands
 
 from app.domains.exceptions import InvalidReactionType
-from app.usecases import Miscellaneous, Roles
+from app.usecases import RubberDuck, Roles
 
 COMMAND_PREFIX = '!'
 
@@ -36,7 +36,7 @@ class Discord:
             bot_secret_key: str,
             admin_id: int,
             roles: Roles,
-            misc: Miscellaneous,
+            misc: RubberDuck,
     ) -> None:
         self._client = Client(intents=intents_default_with_members)
         self.admin_id = admin_id

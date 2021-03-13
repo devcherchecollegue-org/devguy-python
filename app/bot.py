@@ -1,8 +1,8 @@
 from dependency_injector.wiring import Provide
 
-from app.internal.deps import Inject
+from app.dependencies import Dependencies
 from app.transport import Discord
 
 
-def run(discord: Discord = Provide(Inject.discord)):
+def run(discord: Discord = Provide(Dependencies.discord)):
     discord.run()

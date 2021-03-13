@@ -6,32 +6,35 @@ from discord import Guild, HTTPException, Message, PartialEmoji, Role
 from app.domains import InvalidOption, MemberDoesNotExists, RoleDoesNotExists, UnexpectedError
 
 
-class SetupError:
-    def __init__(self, message: str, emoji: PartialEmoji):
-        self.message = message
-        self.emoji_name = emoji.name
-        self.emoji_id = emoji.id
-
-    def print(self):
-        """
-        Print error as multiline string message
-        """
-        print(self.message)
-        print(f"emoji '{self.emoji_name}' with id '{self.emoji_id}' was not added.")
-
-
-class SetRoleOption(Enum):
-    """
-    SetRoleOption represent a specific argument
-    """
-    ADD = 'ADD'
-    REMOVE = 'REMOVE'
-
-
-class Roles:
+class Picker:
     """
     Roles module manages the real process between role management
     """
+    class InvalidPickerMessage(Exception):
+        pass
+
+
+    class CreateMessageError:
+        def __init__(self, message: str, emoji: PartialEmoji):
+            self.message = message
+            self.emoji_name = emoji.name
+            self.emoji_id = emoji.id
+
+        def print(self):
+            """
+            Print error as multiline string message
+            """
+            print(self.message)
+            print(f"emoji '{self.emoji_name}' with id '{self.emoji_id}' was not added.")
+
+
+    class Options(Enum):
+        """
+        SetRoleOption represent a specific argument
+        """
+        ADD = 'ADD'
+        REMOVE = 'REMOVE'
+
 
     __role_picker_msg_id = None
 
@@ -47,7 +50,7 @@ class Roles:
             for name, emoji_id in self.__emoji_to_role
         ]
 
-    async def setup_role_message_picker(self, message: Message) -> List[SetupError]:
+    async def create_message(self, message: Message) -> List[CreateMessageError]:
         """
         Remember role picker message id in memory
 
@@ -62,32 +65,33 @@ class Roles:
             try:
                 await message.add_reaction(emoji)
             except HTTPException as e:
-                errors.append(SetupError(e.text, emoji))
+                errors.append(Picker.CreateMessageError(e.text, emoji))
 
         return errors
 
-    def is_role_picker_message(self, message_id: int):
+    def is_active_message(self, message_id: int):
         return message_id == self.__role_picker_msg_id
 
     def emoji_to_role(self, guild: Guild, emoji: PartialEmoji) -> Role:
-        print(emoji)
         role_id = self.__emoji_to_role.get((emoji.name, emoji.id))
         if not role_id:
             print(role_id, self.__emoji_to_role)
             raise UnexpectedError
+
         role = guild.get_role(role_id)
         if not role:
             raise RoleDoesNotExists
+
         return role
 
     @staticmethod
-    async def set_role(guild: Guild, role: Role, user_id: int, option: SetRoleOption) -> None:
+    async def assign(guild: Guild, role: Role, user_id: int, option: Options) -> None:
         member = guild.get_member(user_id)
         if not member:
             raise MemberDoesNotExists
-        if option == SetRoleOption.ADD:
+        if option == Picker.Options.ADD:
             await member.add_roles(role)
-        elif option == SetRoleOption.REMOVE:
+        elif option == Picker.Options.REMOVE:
             await member.remove_roles(role)
         else:
             raise InvalidOption

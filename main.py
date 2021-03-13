@@ -5,8 +5,9 @@ from os import path
 
 from environs import Env
 
-from app.internal import bot
-from app.internal.deps import Inject
+from app import bot
+from app.dependencies import Dependencies
+
 
 env = Env()
 basedir = path.dirname(__file__)
@@ -18,17 +19,18 @@ with open('emoji_to_roles.json') as f:
 env.read_env()
 
 # Load environment and config from BOT_ENV variable name
-app_env = env.str("BOT_ENV", 'local')
+app_env = env.str('BOT_ENV', 'local')
 
 # Prepare dependencies
-inject = Inject()
+inject = Dependencies()
 inject.config.from_ini(path.join(basedir, app_env + '.ini'), required=True)
-inject.config.from_dict({
+inject.config.inject.config.from_dict({
     'bot_secret':    env.str('DISCORD_BOT_SECRET_KEY'),
     'admin_id':      env.int('DISCORD_BOT_ADMIN_ID'),
     'emoji_to_role': emoji_to_role,
 })
 
-inject.wire(modules=[sys.modules['app.internal.bot']])
+inject.wire(modules=[sys.modules['app']])
+
 # Start features :)
 bot.run()
