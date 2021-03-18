@@ -7,6 +7,9 @@ from app.usecases import Roles, RubberDuck
 
 
 class Dependencies(DeclarativeContainer):
+    """
+    Contain and manages dependencies for the bot
+    """
     config = Configuration()
 
     # Inject roles

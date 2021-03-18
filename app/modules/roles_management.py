@@ -8,13 +8,17 @@ from app.domains import InvalidOption, MemberDoesNotExists, RoleDoesNotExists, U
 
 class Picker:
     """
-    Roles module manages the real process between role management
+    Roles module manages the real process between role management.
     """
     class InvalidPickerMessage(Exception):
         pass
 
 
     class CreateMessageError:
+        """
+        Manages error for picker create message.
+        """
+
         def __init__(self, message: str, emoji: PartialEmoji):
             self.message = message
             self.emoji_name = emoji.name
@@ -22,7 +26,7 @@ class Picker:
 
         def print(self):
             """
-            Print error as multiline string message
+            Print error as multiline string message.
             """
             print(self.message)
             print(f"emoji '{self.emoji_name}' with id '{self.emoji_id}' was not added.")
@@ -30,7 +34,7 @@ class Picker:
 
     class Options(Enum):
         """
-        SetRoleOption represent a specific argument
+        Options represent an option in role management actions.
         """
         ADD = 'ADD'
         REMOVE = 'REMOVE'
@@ -39,7 +43,7 @@ class Picker:
     __role_picker_msg_id = None
 
     def __init__(self, emoji_to_roles: dict):
-        """Initialize role classes"""
+        """Initialize role classes."""
         self.__emoji_to_role = {
             (emoji_name, element['emoji_id']): element['role_id']
             for emoji_name, element in emoji_to_roles.items()
@@ -52,7 +56,7 @@ class Picker:
 
     async def create_message(self, message: Message) -> List[CreateMessageError]:
         """
-        Remember role picker message id in memory
+        Remember role picker message id in memory.
 
         :param message: discord message
         """
@@ -70,9 +74,16 @@ class Picker:
         return errors
 
     def is_active_message(self, message_id: int):
+        """
+        Check if candidate message is the one sat to pick
+        roles.
+        """
         return message_id == self.__role_picker_msg_id
 
     def emoji_to_role(self, guild: Guild, emoji: PartialEmoji) -> Role:
+        """
+        Convert emoji to guild role.
+        """
         role_id = self.__emoji_to_role.get((emoji.name, emoji.id))
         if not role_id:
             print(role_id, self.__emoji_to_role)
@@ -86,6 +97,9 @@ class Picker:
 
     @staticmethod
     async def assign(guild: Guild, role: Role, user_id: int, option: Options) -> None:
+        """
+        Assign or remove role from user in a guild.
+        """
         member = guild.get_member(user_id)
         if not member:
             raise MemberDoesNotExists

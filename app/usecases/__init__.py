@@ -5,5 +5,5 @@ code to describe clearly what has to be done for each known
 actions.
 """
 
-from .rubber_duck import RubberDuck  # expose Miscellaneous in module
+from .rubber_duck import RubberDuck
 from .roles import Roles

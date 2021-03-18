@@ -47,12 +47,18 @@ class Roles:
             self, guild: Optional[Guild],
             message_id: int, emoji: PartialEmoji, user_id: int,
     ) -> None:
+        """
+        Attribute role to user in a discord guild
+        """
         await self.__set_role(guild, message_id, emoji, user_id, Picker.Options.ADD)
 
     async def remove_role(
             self, guild: Optional[Guild],
             message_id: int, emoji: PartialEmoji, user_id: int,
     ) -> None:
+        """
+        Remove role to user in a discord guild
+        """
         await self.__set_role(guild, message_id, emoji, user_id, Picker.Options.REMOVE)
 
     # This is not a good practice while dealing with usecases but I really hate this kind of
@@ -62,6 +68,9 @@ class Roles:
             message_id: int, emoji: PartialEmoji, user_id: int,
             opt: Picker.Options,
     ) -> Optional[Role]:
+        """
+        Process Add or Remove role to user in a discord guild
+        """
         if not self.__roles.is_active_message(message_id):
             print("reaction is not on role picker message")
             return

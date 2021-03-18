@@ -6,7 +6,7 @@ from app.modules import rubber_duck
 
 class RubberDuck:
     """
-    Miscellaneous provides funny usecases to work on the bot simply :)
+    RubberDuck provides funny usecases to work on the bot simply :)
     """
 
     def __init__(self, miscellaneous_module: rubber_duck.RubberDuck):

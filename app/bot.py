@@ -5,4 +5,7 @@ from app.transport import Discord
 
 
 def run(discord: Discord = Provide(Dependencies.discord)):
+    """
+    Start running discord bot instance
+    """
     discord.run()

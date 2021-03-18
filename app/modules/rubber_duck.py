@@ -19,7 +19,7 @@ coin_coins = [
 
 
 class DataAccessObject:
-    """Anti corruption layer for persistence"""
+    """Anti corruption layer for persistence."""
     def __init__(self, config: Configuration):
         try:
             self.conn = connect(config.get('database', {}).get('name'))
@@ -35,7 +35,7 @@ class DataAccessObject:
 
     def get(self, user_id: int):
         """
-        Add user to followed list
+        Add user to followed list.
 
         :param user_id:
         :raises: sqlite3 errors
@@ -47,7 +47,7 @@ class DataAccessObject:
 
     def insert_follow(self, user_id: int):
         """
-        Add user to followed list
+        Add user to followed list.
 
         :param user_id:
         :raises: sqlite3 errors
@@ -61,7 +61,7 @@ class DataAccessObject:
 
     def delete_follow(self, user_id: int):
         """
-        Forgot followed user
+        Forgot followed user.
 
         :param user_id:
         :raises: sqlite3 errors
@@ -82,13 +82,25 @@ class RubberDuck:
 
     @staticmethod
     def get_coin_coin_string() -> str:
+        """
+        Provide random coin-coin string
+        """
         return coin_coins[randint(0, len(coin_coins) - 1)]
 
     def follow_user(self, user_id: int) -> None:
+        """
+        Start following user
+        """
         self.dao.insert_follow(user_id)
 
     def unfollow_user(self, user_id: int) -> None:
+        """
+        Stop following user
+        """
         self.dao.delete_follow(user_id)
 
     def is_following_user(self, user_id: int) -> bool:
+        """
+        Check if user is ducked
+        """
         return self.dao.get(user_id) is not None
