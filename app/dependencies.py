@@ -1,5 +1,5 @@
 from dependency_injector.containers import DeclarativeContainer
-from dependency_injector.providers import Configuration, Singleton, Factory
+from dependency_injector.providers import Configuration, Factory, Singleton
 
 from app.modules import roles_management, rubber_duck
 from app.transport import Discord
@@ -13,19 +13,20 @@ class Dependencies(DeclarativeContainer):
     config = Configuration()
 
     # Inject roles
-    role_module = Singleton(roles_management.Picker, emoji_to_roles=config.emoji_to_role)
+    role_module = Singleton(roles_management.Picker, emoji_to_role=config.emoji_to_role)
     role = Factory(Roles, roles=role_module)
 
     # Inject mis
-    misc_dao = Singleton(rubber_duck.DataAccessObject, config=config)
-    misc_mod = Factory(rubber_duck.RubberDuck, dao=misc_dao)
-    misc = Factory(RubberDuck, miscellaneous_module=misc_mod)
+    rubber_duck_dao = Singleton(rubber_duck.DataAccessObject, config=config)
+    rubber_duck_mod = Factory(rubber_duck.RubberDuck, dao=rubber_duck_dao)
+    rubber_duck_uc = Factory(RubberDuck, rubber_duck_module=rubber_duck_mod)
 
     # Inject transport
     discord = Factory(
         Discord,
-        bot_secret_key=config.bot_secret,
+        bot_secret_key=config.bot_secret_key,
         admin_id=config.admin_id,
+        command_prefix=config.bot.prefix,
         roles=role,
-        misc=misc,
+        rubber_duck=rubber_duck_uc,
     )

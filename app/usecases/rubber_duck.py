@@ -9,8 +9,8 @@ class RubberDuck:
     RubberDuck provides funny usecases to work on the bot simply :)
     """
 
-    def __init__(self, miscellaneous_module: rubber_duck.RubberDuck):
-        self.__duck = miscellaneous_module
+    def __init__(self, rubber_duck_module: rubber_duck.RubberDuck):
+        self.__duck = rubber_duck_module
 
     def coin_coin(self, user_id: int) -> bool:
         """

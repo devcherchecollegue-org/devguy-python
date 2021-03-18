@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-import sys
 from json import load
 from os import path
 
 from environs import Env
 
-from app import bot
+from app import bot, dependencies
 from app.dependencies import Dependencies
-
 
 env = Env()
 basedir = path.dirname(__file__)
@@ -24,13 +22,13 @@ app_env = env.str('BOT_ENV', 'local')
 # Prepare dependencies
 inject = Dependencies()
 inject.config.from_ini(path.join(basedir, app_env + '.ini'), required=True)
-inject.config.inject.config.from_dict({
-    'bot_secret':    env.str('DISCORD_BOT_SECRET_KEY'),
-    'admin_id':      env.int('DISCORD_BOT_ADMIN_ID'),
-    'emoji_to_role': emoji_to_role,
+inject.config.from_dict({
+    'bot_secret_key': env.str('DISCORD_BOT_SECRET_KEY'),
+    'admin_id':       env.int('DISCORD_BOT_ADMIN_ID'),
+    'emoji_to_role':  emoji_to_role,
 })
 
-inject.wire(modules=[sys.modules['app']])
+inject.wire(modules=[bot, dependencies])
 
 # Start features :)
 bot.run()

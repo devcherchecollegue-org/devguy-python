@@ -2,7 +2,7 @@
 good-names = id, e
 min-public-methods = 0
 unsafe-load-any-extension=y
-generated-members=inject,wire,emoji_to_role,bot_secret,admin_id
+generated-members=inject,wire,emoji_to_role,bot_secret,admin_id, bot
 
 [MASTER]
 disable= C0114, R0913 # missing-module-docstring, too many arguments

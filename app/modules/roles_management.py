@@ -10,9 +10,9 @@ class Picker:
     """
     Roles module manages the real process between role management.
     """
+
     class InvalidPickerMessage(Exception):
         pass
-
 
     class CreateMessageError:
         """
@@ -31,7 +31,6 @@ class Picker:
             print(self.message)
             print(f"emoji '{self.emoji_name}' with id '{self.emoji_id}' was not added.")
 
-
     class Options(Enum):
         """
         Options represent an option in role management actions.
@@ -39,14 +38,13 @@ class Picker:
         ADD = 'ADD'
         REMOVE = 'REMOVE'
 
-
     __role_picker_msg_id = None
 
-    def __init__(self, emoji_to_roles: dict):
+    def __init__(self, emoji_to_role: dict):
         """Initialize role classes."""
         self.__emoji_to_role = {
             (emoji_name, element['emoji_id']): element['role_id']
-            for emoji_name, element in emoji_to_roles.items()
+            for emoji_name, element in emoji_to_role.items()
         }
 
         self.__valid_emojies = [
