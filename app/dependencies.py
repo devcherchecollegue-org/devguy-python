@@ -4,8 +4,6 @@ from dependency_injector.wiring import Provide
 
 from app import pony_db
 from app.modules import roles_management, rubber_duck
-# noinspection PyUnresolvedReferences
-# from app.modules.models import sql  # import sql to make generate_mapping work
 from app.transport import Discord
 from app.usecases import Roles, RubberDuck
 
@@ -13,8 +11,8 @@ from app.usecases import Roles, RubberDuck
 def _setup_pony(
         provider: str,
         filename: str,
-        create_db: bool = True,
-        create_tables: bool = True,
+        create_db: bool = False,
+        create_tables: bool = False,
 ) -> None:
     pony_db.bind(provider=provider, filename=filename, create_db=create_db)
     pony_db.generate_mapping(create_tables=create_tables)
