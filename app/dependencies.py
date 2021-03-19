@@ -5,7 +5,7 @@ from dependency_injector.wiring import Provide
 from app import pony_db
 from app.modules import roles_management, rubber_duck
 # noinspection PyUnresolvedReferences
-from app.modules.models import sql  # import sql to make generate_mapping work
+# from app.modules.models import sql  # import sql to make generate_mapping work
 from app.transport import Discord
 from app.usecases import Roles, RubberDuck
 
@@ -29,7 +29,7 @@ class Dependencies(DeclarativeContainer):
     # Setup db
     db = Singleton(
         _setup_pony,
-        provider="sqlite",
+        provider=config.database.type,
         filename=config.database.name,
     )
 
