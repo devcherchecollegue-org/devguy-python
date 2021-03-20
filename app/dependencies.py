@@ -38,8 +38,8 @@ class Dependencies(DeclarativeContainer):
     role = Factory(Roles, roles=role_module)
 
     # Inject mis
-    rubber_duck_dao = Singleton(rubber_duck.DataAccessObject)
-    rubber_duck_mod = Factory(rubber_duck.RubberDuck, dao=rubber_duck_dao)
+    rubber_duck_dao = Singleton(rubber_duck.SqliteDataAccessObject)
+    rubber_duck_mod = Factory(rubber_duck.VanillaRubberDuck, dao=rubber_duck_dao)
     rubber_duck_uc = Factory(RubberDuck, rubber_duck_module=rubber_duck_mod)
 
     # Inject transport

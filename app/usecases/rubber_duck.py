@@ -1,5 +1,5 @@
+from sqlite3 import Error, IntegrityError
 from typing import Optional
-from sqlite3 import IntegrityError
 
 from app.modules import rubber_duck
 
@@ -29,6 +29,9 @@ class RubberDuck:
             print(e)
         except NotImplementedError:
             print("Method follow does not exist for coin coin command")
+            return False
+        except Error:
+            print('Error while running db command')
             return False
 
         return True
