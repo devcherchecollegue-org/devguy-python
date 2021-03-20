@@ -1,2 +1,5 @@
 pylama==7.7.1
 pylint==2.7.2
+pytest
+watchdog
+coverage

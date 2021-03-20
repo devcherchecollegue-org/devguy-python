@@ -14,15 +14,18 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+
       - name: setup python
         uses: actions/setup-python@v2
         with:
           python-version: '3.9.2'
+
       - name: install dependencies
-        # skipping requirements.txt for speed purpose
-        run: pip3 install pytest pylama pylint
+        # skipping requirements.txt for speed purpose => cannot skip for test
+        run: pip3 install requirement.txt && pip3 install requirement-dev.txt
+
       - name: lint
         run: pylama main.py app/*
-    # todo: uncomment when tests are created - alt: can replace the above with pytest --pylama
-    # - name: test
-    #   run: pytest main.py app/*
+
+      - name: test
+        run: pytest app/*
