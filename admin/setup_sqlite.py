@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS coin_coin (
 """
 
 try:
-    CONN = sqlite3.connect(config.get('database', 'database'))
+    CONN = sqlite3.connect(config.get('database', 'name'))
 except sqlite3.Error as error:
     print(error)
     sys.exit(2)
