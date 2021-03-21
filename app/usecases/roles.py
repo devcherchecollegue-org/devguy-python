@@ -6,7 +6,7 @@ from app.domains import (
     GuildDoesNotExists, MemberDoesNotExists,
     RoleDoesNotExists,
 )
-from app.modules.roles import Roles as RolesMod, SetRoleOption
+from app.modules.roles_management import Picker
 
 
 class Roles:
@@ -26,7 +26,7 @@ class Roles:
     another platform for now!
     """
 
-    def __init__(self, roles: RolesMod):
+    def __init__(self, roles: Picker):
         self.__roles = roles
 
     # This is a not a perfectly clean implem as emojies are return directly as
@@ -38,7 +38,7 @@ class Roles:
         """
         Set message to pick role on!
         """
-        errors = await self.__roles.setup_role_message_picker(message)
+        errors = await self.__roles.create_message(message)
 
         for err in errors:
             err.print()
@@ -47,22 +47,31 @@ class Roles:
             self, guild: Optional[Guild],
             message_id: int, emoji: PartialEmoji, user_id: int,
     ) -> None:
-        await self.__set_role(guild, message_id, emoji, user_id, SetRoleOption.ADD)
+        """
+        Attribute role to user in a discord guild
+        """
+        await self.__set_role(guild, message_id, emoji, user_id, Picker.Options.ADD)
 
     async def remove_role(
             self, guild: Optional[Guild],
             message_id: int, emoji: PartialEmoji, user_id: int,
     ) -> None:
-        await self.__set_role(guild, message_id, emoji, user_id, SetRoleOption.REMOVE)
+        """
+        Remove role to user in a discord guild
+        """
+        await self.__set_role(guild, message_id, emoji, user_id, Picker.Options.REMOVE)
 
     # This is not a good practice while dealing with usecases but I really hate this kind of
     # duplication ... Perhaps I should just keep this usecase 
     async def __set_role(
             self, guild: Optional[Guild],
             message_id: int, emoji: PartialEmoji, user_id: int,
-            opt: SetRoleOption,
+            opt: Picker.Options,
     ) -> Optional[Role]:
-        if not self.__roles.is_role_picker_message(message_id):
+        """
+        Process Add or Remove role to user in a discord guild
+        """
+        if not self.__roles.is_active_message(message_id):
             print("reaction is not on role picker message")
             return
 
@@ -71,7 +80,7 @@ class Roles:
 
         try:
             role = self.__roles.emoji_to_role(guild, emoji)
-            await self.__roles.set_role(guild, role, user_id, opt)
+            await self.__roles.assign(guild, role, user_id, opt)
 
         except (RoleDoesNotExists, MemberDoesNotExists, HTTPException) as e:
             print(e)

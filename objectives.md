@@ -20,12 +20,18 @@ Attentes :
     - Ce qui m'attire avec ce projet c'est de pouvoir créer pleins de commandes fun
     - Voir un projet qui evolue et pouvoir y apporter ma patte
 
+-T.:
+    - M'amuser avec python
+    - Tester la clean archi en python
+    - Jouer avec discord ;)
+
 Expérience :
 - Python :
     - G. : ~2/3 ans d'xp
     - M. : des notions lointaines
     - N. : N/A - mais senior sur d'autre lang
     - R. : je sais faire une boucle for
+    - T. : ~3/4 ans
 - Java/Kotlin :
     - R. : 5/7 ans Java avec 1.5 ans de Kotlin
     - G. : 6 mois de Java il y a 4 ans (c'est lointain)
@@ -106,3 +112,6 @@ Feature complete:
 
 7 - Modération 
     - Modifier les messages qui contiennent un email ou numéro -> remplacer par **********
+
+8 - Canard en plastique
+    - Un canard qui vous suit et vous coin cointe dans le chat.

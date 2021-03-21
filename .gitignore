@@ -149,3 +149,4 @@ dmypy.json
 venv
 .env.*
 !.env.sample
+*.sqlite

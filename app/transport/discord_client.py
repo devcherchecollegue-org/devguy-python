@@ -4,9 +4,7 @@ from discord import Client, Intents, Message, RawReactionActionEvent
 from discord.ext import commands
 
 from app.domains.exceptions import InvalidReactionType
-from app.usecases import Miscellaneous, Roles
-
-COMMAND_PREFIX = '!'
+from app.usecases import Roles, RubberDuck
 
 intents_default_with_members = Intents.default()
 # pylint: disable=E0237
@@ -23,7 +21,7 @@ class MessageCommand:
     pass
 
 
-class DiscordClient:
+class Discord:
     """
         That class handles events recorded from discord by a bot.
         bot_secret_key is the secret key of the bot given by discord.
@@ -35,13 +33,14 @@ class DiscordClient:
             self,
             bot_secret_key: str,
             admin_id: int,
+            command_prefix: str,
             roles: Roles,
-            misc: Miscellaneous,
+            rubber_duck: RubberDuck,
     ) -> None:
         self._client = Client(intents=intents_default_with_members)
         self.admin_id = admin_id
         self.bot = commands.Bot(
-            command_prefix=COMMAND_PREFIX,
+            command_prefix=command_prefix,
             intents=intents_default_with_members,
         )
         self._bot_secret_key = bot_secret_key
@@ -49,12 +48,12 @@ class DiscordClient:
         self._client.on_raw_reaction_remove = self.on_raw_reaction_remove
         self._client.on_message = self.on_message
         self.__roles = roles
-        self.__misc = misc
+        self.__duck = rubber_duck
 
         self.__cmd = {
-            f'{COMMAND_PREFIX}set_role_picker': self.__cmd_set_role_picker,
-            f'{COMMAND_PREFIX}coin_coin':       self.__cmd_coin_coin_follow,
-            f'{COMMAND_PREFIX}coin_coin_stop':  self.__cmd_coin_coin_unfollow,
+            f'{command_prefix}set_role_picker': self.__cmd_set_role_picker,
+            f'{command_prefix}coin_coin':       self.__cmd_coin_coin_follow,
+            f'{command_prefix}coin_coin_stop':  self.__cmd_coin_coin_unfollow,
         }
 
     def run(self):
@@ -66,10 +65,10 @@ class DiscordClient:
         await self.__roles.setup_role_picker(_role_message_picker)
 
     async def __cmd_coin_coin_follow(self, message: Message):
-        self.__misc.coin_coin(message.author.id)
+        self.__duck.coin_coin(message.author.id)
 
     async def __cmd_coin_coin_unfollow(self, message: Message):
-        self.__misc.stop_coin_coin(message.author.id)
+        self.__duck.stop_coin_coin(message.author.id)
 
     async def on_message(self, message: Message):
         """ Handles messages. """
@@ -84,7 +83,7 @@ class DiscordClient:
             await self.__cmd[message.content](message)
             return
 
-        coin_coin = self.__misc.coin_coin_message(message.author.id)
+        coin_coin = self.__duck.coin_coin_message(message.author.id)
         if coin_coin:
             await message.channel.send(coin_coin)
 

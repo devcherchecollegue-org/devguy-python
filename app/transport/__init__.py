@@ -5,4 +5,4 @@ any logic besides how we retrieve information from user
 and how we provide him information!
 """
 
-from .discord_client import DiscordClient as Discord
+from .discord_client import Discord
