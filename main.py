@@ -7,6 +7,7 @@ from environs import Env
 from app import bot, dependencies
 from app.dependencies import Dependencies
 
+
 env = Env()
 basedir = path.dirname(__file__)
 
@@ -29,6 +30,7 @@ inject.config.from_dict({
 })
 
 inject.wire(modules=[bot, dependencies])
+dependencies.init_null_deps()  # setup database with orm ~~
 
 # Start features :)
 bot.run()
