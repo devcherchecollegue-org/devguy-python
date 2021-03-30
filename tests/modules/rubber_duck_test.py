@@ -1,13 +1,18 @@
+import faker
 import pytest
 from pony.orm import db_session
 
+from app import pony_db
 from app.modules import rubber_duck, VanillaRubberDuck
 from app.modules.models import sql
+from app.modules.rubber_duck import SqliteDataAccessObject
 from tests.mocks.modules.rubber_duck import MockedDataAccessObject
 
 
 rubber_duck_dao = MockedDataAccessObject()
 rubber_duck_mod = VanillaRubberDuck(rubber_duck_dao)
+
+fake = faker.Faker('fr_FR')
 
 
 @pytest.fixture(autouse=True)
@@ -44,3 +49,21 @@ class TestVanillaRubberDuck:
 
         rubber_duck_dao.on('get', return_value=sql.RubberDuck(user_id=198), user_id=198)
         assert rubber_duck_mod.is_following_user(198) is True
+
+
+class TestSQLiteDAO:
+    _dao = SqliteDataAccessObject()
+
+    @db_session
+    def test_get_known_user(self, insert_random_user):
+        user = self._dao.get(insert_random_user)
+        assert user is not None
+        assert self._dao.get(insert_random_user).user_id == insert_random_user
+
+
+@pytest.fixture
+@db_session
+def insert_random_user() -> int:
+    id = fake.pyint()
+    pony_db.insert('RubberDuck', user_id=id)
+    return id
