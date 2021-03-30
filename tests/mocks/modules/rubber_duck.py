@@ -6,14 +6,14 @@ from tests.mocks.mock import Mock
 class MockedDataAccessObject(rubber_duck.DataAccessObject, Mock):
     @staticmethod
     def get(user_id: int) -> sql.RubberDuck:
-        return MockedRubberDuck.returns('get', user_id=user_id)
+        return MockedDataAccessObject.returns('get', user_id=user_id)
 
     @staticmethod
     def insert_follow(user_id: int) -> None:
-        MockedRubberDuck.returns('insert_follow', user_id=user_id)
+        MockedDataAccessObject.returns('insert_follow', user_id=user_id)
 
     def delete_follow(self, user_id: int) -> None:
-        MockedRubberDuck.returns('delete_follow', user_id=user_id)
+        MockedDataAccessObject.returns('delete_follow', user_id=user_id)
 
 
 class MockedRubberDuck(rubber_duck.RubberDuck, Mock):

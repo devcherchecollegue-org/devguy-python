@@ -22,10 +22,10 @@ jobs:
 
       - name: install dependencies
         # skipping requirements.txt for speed purpose => cannot skip for test
-        run: pip3 install requirement.txt && pip3 install requirement-dev.txt
+        run: pip3 install -r requirements.txt && pip3 install -r requirements-dev.txt
 
       - name: lint
         run: pylama main.py app/*
 
       - name: test
-        run: pytest app/*
+        run: pytest tests/*
