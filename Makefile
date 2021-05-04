@@ -4,16 +4,19 @@ export
 ###################
 # Setup tasks	  #
 ###################
+install_dev:
+	pip install -e ".[dev]"
+
+install:
+	pip install .
+
 setup_venv:
 	python3.9 -m venv venv
 	. venv/bin/activate
-	pip install .
 
-setup_dev: setup_venv
-	pip install -e ".[dev]"
+setup_dev: setup_venv install_dev
 
-setup:
-	pip3 install .
+setup: setup_venv install
 
 ###################
 # Testing   	  #
