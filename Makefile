@@ -29,7 +29,16 @@ lint:
 	mypy main.py app tests
 
 cover:
-	coverage run --source=app -m pytest -x .
+	coverage run --source=app -m pytest -xv .
+
+coverage-report: cover
+	coverage report -m
+
+bandit:
+	bandit -r app main.py
+
+bandit-ci:
+	bandit -r -ll -ii app main.py
 
 test-all: lint cover
 
