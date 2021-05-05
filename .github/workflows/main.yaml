@@ -52,10 +52,10 @@ jobs:
       - name: testing
         run: make cover
 
-      - name: Coveralls
-        uses: AndreMiras/coveralls-python-action@develop
-        with:
-          github-token: ${{ secrets.COVERALLS_TOKEN1 }}
-          parallel: false
-          flag-name: Unit Test
+      # - name: Coveralls
+      #   uses: AndreMiras/coveralls-python-action@v20201129
+      #   with:
+      #     github-token: ${{ secrets.COVERALLS_TOKEN2 }}
+      #     parallel: false
+      #     flag-name: Unit Test
 
