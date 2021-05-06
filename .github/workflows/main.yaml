@@ -1,6 +1,8 @@
 name: audit with tests and lint
 on:
   push:
+    branches:
+      - main
     paths-ignore:
       - '**.md'
   pull_request:
@@ -8,21 +10,52 @@ on:
     paths-ignore:
       - '**.md'
 jobs:
-  audit:
-    name: lint and test
+  lint:
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
+
       - name: setup python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9.2'
+          python-version: '3.9'
+
+      - name: setup env
+        run: cp .env.sample .env
+
       - name: install dependencies
-        # skipping requirements.txt for speed purpose
-        run: pip3 install pytest pylama pylint
+        run: make setup_dev
+
       - name: lint
-        run: pylama main.py app/*
-    # todo: uncomment when tests are created - alt: can replace the above with pytest --pylama
-    # - name: test
-    #   run: pytest main.py app/*
+        run: make lint
+  
+  test:
+    name: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          
+      - name: setup env
+        run: cp .env.sample .env
+
+      - name: install dependencies
+        run: make setup_dev
+
+      - name: testing
+        run: make cover
+
+      # - name: Coveralls
+      #   uses: AndreMiras/coveralls-python-action@v20201129
+      #   with:
+      #     github-token: ${{ secrets.COVERALLS_TOKEN2 }}
+      #     parallel: false
+      #     flag-name: Unit Test
+

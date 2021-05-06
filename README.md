@@ -1,5 +1,17 @@
 # devguy
 
+![CI Status](https://github.com/devcherchecollegue-org/devguy-python/actions/workflows/main.yaml/badge.svg?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/devcherchecollegue-org/devguy-python/badge.svg?branch=main)](https://coveralls.io/github/devcherchecollegue-org/devguy-python?branch=main)
+
+<!-- TOC -->
+
+- [devguy](#devguy)
+  - [Cas d'usage](#cas-dusage)
+  - [Setup des environnement](#setup-des-environnement)
+  - [Lancer le bot](#lancer-le-bot)
+
+<!-- /TOC -->
+
 Bot Discord collaboratif du serveur **Dev Cherche Collègue**
 
 Pour collaborer efficacement, chaque collaborateur est responsable de se créer un Serveur Discord et d'inviter un bot
@@ -36,104 +48,14 @@ Pour tester sur votre serveur privé:
 - Dans le channel de votre choix taper `! set_role_picker'
 - Un message du bot devrait apparaitre avec les emotes configurées dans `emoji_to_roles.json`.
 
-## Configuration de l'environnement client
+## Setup des environnement
 
-Création de l'environnement virtuel local
-
-```bash
-python3 -m venv venv
-```
-
-Création d'un fichier .env pour les variables locales
-
-```bash
-cat > .env <<EOF
-DISCORD_BOT_SECRET_KEY=<YOUR DISCORD BOT SECRET KEY>
-DISCORD_BOT_ADMIN_ID=<ID OF THE USER ABLE TO ADD REACT MESSAGES>
-EOF
-```
-
-Activation de l'environnement (Linux et Mac)
-
-```bash
-source venv/bin/activate
-```
-
-Activation de l'environnement (Windows Powershell)
-
-```powershell
-venv\bin\activate.ps1
-```
-
-Installation des dépendances
-
-```bash
-pip3 install -r requirements.txt
-```
-
-## Utilisation de l'environnement de développement
-
-Installation des dépendances de test
-
-```bash
-pip3 install -r requirements.txt
-pip3 install -r requirements-dev.txt
-```
-
-Exécuter le linter
-
-```bash
-pylama main.py app/*
-```
-
-Exécuter les tests
-
-```bash
-python3 -m pytest
-```
-
-## Setup database
-
-```
-python3 admin/setup_sqlite.py
-```
-
-ou
-
-```
-./admin/setup_sqlite.py
-```
+- `make setup_dev`
 
 ## Lancer le bot
 
 Pas de notion prod et développement pour le moment, c'est un protoype !
 
-```
-python3 main.py
-```
-
-ou
-
-```
-./main.py
-```
-
-## Architecture du code
-
-### Proposition 1: Clean archi
-
-La clean archi propose de séparer clairement le besoin métier (usecase), la communication avec l'utilisateur (transport)
-, l'implémention réelle (module) et les objets interne à l'application (domains).
-
-Chaque module possède une part de la connaissance et s'interface avec les autres. Globalement:
-
-Un utilisateur fait une demande au transport -> le transport analyse la demande et la traduit pour l'usecase concerné ->
-Le usecase appelle les modules nécessaire à la résolution du besoin -> Redispatch des retours des modules par le
-usecases qui gère les erreurs et renvois ce qui est nécessaire au transport pour répondre à l'utilisateur si besoin.
-
-J'aime bien travailler avec ce découpage car il permet d'isoler la communication avec le client, le besoin fonctionnelle
-et le besoin technique. Mes usecases doivent idéalement être agnostique du transport et de l'implémentation mais ce ne
-doit pas être un point bloquant (si un usecase et propre a un prérequis de transport ou d'implém, il doit pouvoir ne pas
-être indépendant de celui-ci).
-
-Cela simplifie l'écriture de test automatisé et permet une plus grande souplesse du code.
+- copy .env.sample into .env
+- fill .env
+- `make run`
