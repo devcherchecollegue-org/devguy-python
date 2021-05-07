@@ -1,0 +1,12 @@
+[run]
+omit = *test*
+relative_files = True
+
+[report]
+exclude_lines =
+    pragma : no-cover
+    pragma: no-cover
+    pragma:no-cover
+    pragma :no-cover
+    # Ignore debug-only repr
+    def __repr__
