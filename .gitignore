@@ -4,6 +4,7 @@ venv
 *cache*
 *.egg-info
 *coverage*
+!.coveragerc
 .idea
 .env*
 !.env.sample
