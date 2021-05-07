@@ -12,6 +12,20 @@ class MockChannel(Mock):
 
 
 class MockMessage(Mock):
-    def __init__(self, channel, author):
+    def __init__(self, content: str = "", channel=None, author=None):
+        self.content = content
         self.channel = channel
         self.author = author
+
+    def set_content(self, content: str):
+        self.content = content
+
+
+class MockUser(Mock):
+    def __init__(self, name: str):
+        self.name = name
+
+
+class MockClient(Mock):
+    def __init__(self, user):
+        self.user = user

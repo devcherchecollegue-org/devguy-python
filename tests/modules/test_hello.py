@@ -20,14 +20,14 @@ def cleanup():
     message.reset()
 
 
-class TestSayHello:
+class TestRespond:
     def test_should_respond_hello(self):
         channel.on("send", "Hello!").returns(False)
-        assert hello.respond(message, "ok") is False
+        assert hello.Usecase.respond(message, "ok") is False
 
         channel.reset()
         channel.on("send", "Hello!").returns("Test")
-        assert hello.respond(message, "ok") == "Test"
+        assert hello.Usecase.respond(message, "ok") == "Test"
 
     def test_should_not_respond_to_bot(self):
-        assert hello.respond(message, "test") is None
+        assert hello.Usecase.respond(message, "test") is None
