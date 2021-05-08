@@ -2,6 +2,7 @@
 
 ![CI Status](https://github.com/devcherchecollegue-org/devguy-python/actions/workflows/main.yaml/badge.svg?branch=main)
 [![Coverage Status](https://coveralls.io/repos/github/devcherchecollegue-org/devguy-python/badge.svg?branch=main)](https://coveralls.io/github/devcherchecollegue-org/devguy-python?branch=main)
+[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 
 <!-- TOC -->
 
