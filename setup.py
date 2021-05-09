@@ -6,8 +6,20 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["discord"],
+    install_requires=[
+        "discord",
+        "pydantic",
+        "sqlalchemy",
+    ],
     extras_require={
-        "dev": ["flake8", "coverage", "mypy", "black", "pytest", "elmock", "pydantic"],
+        "dev": [
+            "black",
+            "bandit",
+            "coverage",
+            "elmock",
+            "flake8",
+            "mypy",
+            "pytest",
+        ],
     },
 )

@@ -9,6 +9,7 @@ on:
     types: [ opened, synchronize, reopened ]
     paths-ignore:
       - '**.md'
+
 jobs:
   lint:
     name: lint
@@ -31,6 +32,28 @@ jobs:
       - name: lint
         run: make lint
   
+  security:
+    name: security
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: setup env
+        run: cp .env.sample .env
+
+      - name: install dependencies
+        run: make setup_dev
+
+      - name: bandit
+        run: make bandit-ci
+
+
   test:
     name: tests
     runs-on: ubuntu-latest
